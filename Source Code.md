@@ -2,6 +2,8 @@ Source Code:
 
 C# Console app
 
+Don't Skid it and post it somewhere you can use the code just change the branding please and thank you!
+
 ```
 // POTATO Discord Nuker
 // Made with ❤️ by bear
